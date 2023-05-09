@@ -27,9 +27,6 @@ function http<T = any>(
   const successHandler = (res: AxiosResponse<Response<T>>) => {
     const authStore = useAuthStore()
 
-    const userStore = useUserStore()
-    request.defaults.headers.Authorization = "Bearer " + userStore.userInfo.gptKey
-
     if (res.data.status === 'Success' || typeof res.data === 'string')
       return res.data
 
@@ -40,6 +37,8 @@ function http<T = any>(
 
     return Promise.reject(res.data)
   }
+  const userStore = useUserStore()
+  request.defaults.headers.Authorization = "Bearer " + userStore.userInfo.gptKey
 
   const failHandler = (error: Response<Error>) => {
     afterRequest?.()

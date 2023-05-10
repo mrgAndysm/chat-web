@@ -3,7 +3,7 @@ import request from './axios'
 import { useAuthStore, useUserStore } from '@/store'
 // import { computed } from 'vue'
 // request.defaults.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODExOTY3NDksImlhdCI6MTY4MTExMDM0OSwibmJmIjoxNjgxMTEwMzQ5LCJzdWIiOiI0NTU2MzYxOTA2NzUwODk0MDkscGdtYW4sMSJ9.Q5UyvxEouDY8c6DX9OF1wVIXpX3vhHhiHQdy39NXnqU`;
-
+// request.defaults.headers.common['Proxy-Connection'] = 'keep-alive'
 export interface HttpOption {
   url: string
   data?: any

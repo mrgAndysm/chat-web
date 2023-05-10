@@ -15,42 +15,17 @@ COPY . /app
 
 RUN pnpm run build
 
-# build backend
-FROM node:lts-alpine as backend
+# Nginx 服务
+FROM nginx:stable-alpine as production-stage
 
-RUN npm install pnpm -g
+# 从上一阶段中复制静态文件
+COPY --from=frontend /app/dist /usr/share/nginx/html
 
-WORKDIR /app
+# 将配置文件复制到容器中
+COPY docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY /service/package.json /app
+# 暴露 80 端口
+EXPOSE 80
 
-COPY /service/pnpm-lock.yaml /app
-
-RUN pnpm install
-
-COPY /service /app
-
-RUN pnpm build
-
-# service
-FROM node:lts-alpine
-
-RUN npm install pnpm -g
-
-WORKDIR /app
-
-COPY /service/package.json /app
-
-COPY /service/pnpm-lock.yaml /app
-
-RUN pnpm install --production && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
-
-COPY /service /app
-
-COPY --from=frontend /app/dist /app/public
-
-COPY --from=backend /app/build /app/build
-
-EXPOSE 3002
-
-CMD ["pnpm", "run", "prod"]
+# 启动 Nginx 服务
+CMD ["nginx", "-g", "daemon off;"]

@@ -64,3 +64,9 @@ export function fetchVerify<T>(token: string) {
     data: { token },
   })
 }
+
+export function fetchGetKeyList<T>() {
+  return post<T>({
+    url: '/sys/key/list',
+  })
+}

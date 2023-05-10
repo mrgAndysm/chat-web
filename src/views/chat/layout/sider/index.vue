@@ -7,6 +7,7 @@ import Footer from './Footer.vue'
 import { useAppStore, useChatStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { PromptStore } from '@/components/common'
+import { fetchGetKeyList } from '@/api'
 
 const appStore = useAppStore()
 const chatStore = useChatStore()
@@ -45,6 +46,7 @@ const mobileSafeArea = computed(() => {
   return {}
 })
 
+
 watch(
   isMobile,
   (val) => {
@@ -82,6 +84,11 @@ watch(
         <div class="p-4">
           <NButton block @click="show = true">
             {{ $t('store.siderButton') }}
+          </NButton>
+        </div>
+        <div class="p-4">
+          <NButton block @click="fetchGetKeyList">
+            获取gptkey
           </NButton>
         </div>
       </main>

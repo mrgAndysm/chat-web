@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>流接收页面</title>
+  </head>
+  <body>
+    <!-- <h1>流接收页面</h1> -->
+    <div id="result"></div>
+    <script>
+      // 发送 POST 请求获取数据流
+const requestData = {
+  // 定义请求参数
+  prompt: '请写一篇200字文字主题是爱',
+  options: {
+    parentMessageId: 'chatcmpl-7EaMQrRmq8loNHsHCe1ktJdXW2Cwb',
+  },
+};
+
+// 发送 POST 请求获取数据流
+fetch('http://104.168.143.221:3003/api/chat-process', {
+  method: 'POST',
+  body: JSON.stringify(requestData),
+  headers: {
+    'Content-Type': 'application/json;charset=utf-8',
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODExOTY3NDksImlhdCI6MTY4MTExMDM0OSwibmJmIjoxNjgxMTEwMzQ5LCJzdWIiOiI0NTU2MzYxOTA2NzUwODk0MDkscGdtYW4sMSJ9.Q5UyvxEouDY8c6DX9OF1wVIXpX3vhHhiHQdy39NXnqU',
+  },
+})
+  .then((response) => {
+    return new Promise((resolve, reject) => {
+      const reader = response.body.getReader(); // 获取数据流的读取器
+      resolve(
+        new ReadableStream({
+          start(controller) {
+            function read() {
+              reader.read().then(({ done, value }) => {
+                if (done) {
+                  controller.close(); // 数据读取完成，关闭数据流
+                  return;
+                }
+                controller.enqueue(value); // 将读取的数据放入数据流队列中
+                read(); // 继续读取数据
+              });
+            }
+            read(); // 开始读取数据
+          },
+        })
+      );
+    });
+  })
+  .then((stream) => {
+    const reader = stream.getReader(); // 获取数据流的读取器
+    function read() {
+      reader.read().then(({ done, value }) => {
+        if (done) return; // 数据全部读取完成，结束读取
+        const result = document.getElementById('result');
+        result.innerHTML += value + '<br/>'; // 处理读取的数据，将其添加到页面中显示
+        read(); // 继续读取数据
+      });
+    }
+    read(); // 开始读取数据
+  })
+  .catch((error) => console.error(error));
+    </script>
+  </body>
+</html>
